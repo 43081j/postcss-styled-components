@@ -1,4 +1,4 @@
-import {Root, Rule, Declaration, Comment, AtRule} from 'postcss';
+import {Root, Rule, Declaration, Comment} from 'postcss';
 import {assert} from 'chai';
 import {createTestAst} from './util.js';
 
@@ -22,11 +22,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(root.raws.codeBefore, '\n      styled.div`\n');
     assert.equal(root.parent, ast);
@@ -46,11 +44,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(root.raws.codeBefore, '\n      styled(Component)`\n');
     assert.equal(root.parent, ast);
@@ -70,11 +66,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(root.raws.codeBefore, '\n      styled.div.attrs({})`\n');
     assert.equal(root.parent, ast);
@@ -94,11 +88,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(
       root.raws.codeBefore,
@@ -149,12 +141,10 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as AtRule;
-    const from = rule.nodes[0] as Rule;
-    const to = rule.nodes[1] as Rule;
+    const from = root.nodes[0] as Rule;
+    const to = root.nodes[1] as Rule;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'atrule');
     assert.equal(from.type, 'rule');
     assert.equal(to.type, 'rule');
     assert.equal(from.selector, 'from');
@@ -179,11 +169,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
   });
 
@@ -195,11 +183,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
   });
 
@@ -240,12 +226,10 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
-    const background = rule.nodes[1] as Declaration;
+    const colour = root.nodes[0] as Declaration;
+    const background = root.nodes[1] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(background.type, 'decl');
     assert.equal(root.raws.codeBefore, '\n      styled.div`\n');
@@ -267,11 +251,9 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const colour = rule.nodes[0] as Declaration;
+    const colour = root.nodes[0] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(colour.type, 'decl');
     assert.equal(root.raws.codeBefore, '\n      styled.div`\n');
     assert.equal(root.parent, ast);
@@ -291,12 +273,10 @@ describe('parse', () => {
       \`;
     `);
     const root = ast.nodes[0] as Root;
-    const rule = root.nodes[0] as Rule;
-    const placeholder = rule.nodes[0] as Comment;
-    const colour = rule.nodes[1] as Declaration;
+    const placeholder = root.nodes[0] as Comment;
+    const colour = root.nodes[1] as Declaration;
     assert.equal(ast.type, 'document');
     assert.equal(root.type, 'root');
-    assert.equal(rule.type, 'rule');
     assert.equal(placeholder.type, 'comment');
     assert.equal(colour.type, 'decl');
     assert.equal(ast.source!.input.css, source);

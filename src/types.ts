@@ -8,10 +8,8 @@ export interface RootConfig {
     prefix: Offset;
     suffix: Offset;
   };
-  cssOffsets: {
-    prefix: Offset;
-    suffix: Offset;
-  };
   baseIndentations: Map<number, number>;
   expressionStrings: string[];
 }
+
+export type NodeRaws = Record<string, string>;

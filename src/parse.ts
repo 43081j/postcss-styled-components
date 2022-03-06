@@ -6,8 +6,6 @@ import {
   parseModule,
   extractMatchingTemplates,
   isStyledComponentTemplate,
-  isKeyFramesNode,
-  isStyleSheetNode,
   deindentSource,
   extractStyleText
 } from './utilities.js';
@@ -31,7 +29,6 @@ export const parse: Parser<Root | Document> = (
   );
 
   let currentOffset = 0;
-  let nodeIndex = 0;
 
   for (const node of extractedStyles) {
     if (!node.quasi.range) {
@@ -44,10 +41,6 @@ export const parse: Parser<Root | Document> = (
         prefix: {lines: 0, offset: 0},
         suffix: {lines: 0, offset: 0}
       },
-      cssOffsets: {
-        prefix: {lines: 0, offset: 0},
-        suffix: {lines: 0, offset: 0}
-      },
       baseIndentations: new Map<number, number>(),
       expressionStrings: []
     };
@@ -55,24 +48,9 @@ export const parse: Parser<Root | Document> = (
     const emptyLinePattern = /^[ \\t\r]*$/;
     let baseIndentation = (node.quasi.loc?.end.column ?? 1) - 1;
     const extractedText = extractStyleText(sourceAsString, node);
-    let prefix = '';
-    let suffix = '';
+    const sourceLines = extractedText.source.split('\n');
 
     config.expressionStrings = extractedText.expressionStrings;
-
-    if (isKeyFramesNode(node)) {
-      baseIndentation *= 2;
-      const indentString = ' '.repeat(baseIndentation);
-      prefix = `${indentString}@keyframes postcss-styled-components-${nodeIndex} {`;
-      suffix = `${indentString}}`;
-    } else if (!isStyleSheetNode(node)) {
-      baseIndentation *= 2;
-      const indentString = ' '.repeat(baseIndentation);
-      prefix = `${indentString}.postcss-styled-components-${nodeIndex} {`;
-      suffix = `${indentString}}`;
-    }
-
-    const sourceLines = extractedText.source.split('\n');
 
     if (
       sourceLines.length > 1 &&
@@ -82,16 +60,6 @@ export const parse: Parser<Root | Document> = (
       config.sourceOffsets.prefix.lines = 1;
       config.sourceOffsets.prefix.offset = sourceLines[0].length + 1;
       sourceLines.shift();
-    }
-
-    if (prefix) {
-      sourceLines.unshift(prefix);
-      config.cssOffsets.prefix.offset += prefix.length;
-    }
-
-    if (suffix) {
-      sourceLines.push(suffix);
-      config.cssOffsets.suffix.offset += suffix.length;
     }
 
     const deindentedStyleText = deindentSource(sourceLines, baseIndentation);
@@ -117,8 +85,6 @@ export const parse: Parser<Root | Document> = (
     doc.nodes.push(root);
 
     currentOffset = node.quasi.range[1] - 1;
-
-    nodeIndex++;
   }
 
   if (doc.nodes.length > 0) {

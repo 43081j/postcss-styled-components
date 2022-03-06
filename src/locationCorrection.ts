@@ -1,7 +1,7 @@
 import {Root, Position, Document, ChildNode, AnyNode} from 'postcss';
 import {TaggedTemplateExpression} from '@babel/types';
 import {createPlaceholder} from './utilities.js';
-import {RootConfig} from './types.js';
+import {RootConfig, NodeRaws} from './types.js';
 
 const correctLocation = (
   node: TaggedTemplateExpression,
@@ -22,7 +22,6 @@ const correctLocation = (
 
   lineOffset += config.sourceOffsets.prefix.lines;
   newOffset += config.sourceOffsets.prefix.offset;
-  newOffset += config.cssOffsets.prefix.offset;
 
   for (let i = 0; i < node.quasi.expressions.length; i++) {
     const expr = node.quasi.expressions[i];
@@ -93,6 +92,8 @@ function computeBeforeAfter(
   node: Document | Root | ChildNode,
   config: RootConfig
 ): void {
+  const correctedRaws: NodeRaws = node.raws['styledComponentsRaws'] ?? {};
+
   if (
     node.raws['before'] &&
     (node.raws['before'].includes('\n') || node.parent?.type === 'root') &&
@@ -104,7 +105,7 @@ function computeBeforeAfter(
       node.source.start.line - numBeforeLines,
       config
     );
-    node.raws['litBefore'] = corrected;
+    correctedRaws['before'] = corrected;
   }
 
   if (
@@ -123,7 +124,7 @@ function computeBeforeAfter(
         line - numAfterLines,
         config
       );
-      node.raws['litAfter'] = corrected;
+      correctedRaws['after'] = corrected;
     }
   }
 
@@ -138,15 +139,14 @@ function computeBeforeAfter(
       config
     );
 
-    node.raws['litBetween'] = corrected;
+    correctedRaws['between'] = corrected;
   }
 
   if (node.type === 'rule' && node.selector.includes('\n')) {
     const rawValue = computeCorrectedRawValue(node, 'selector', config);
 
     if (rawValue !== null) {
-      (node.raws as unknown as Record<string, unknown>)['litSelector'] =
-        rawValue;
+      correctedRaws['selector'] = rawValue;
     }
   }
 
@@ -154,7 +154,7 @@ function computeBeforeAfter(
     const rawValue = computeCorrectedRawValue(node, 'value', config);
 
     if (rawValue !== null) {
-      (node.raws as unknown as Record<string, unknown>)['litValue'] = rawValue;
+      correctedRaws['value'] = rawValue;
     }
   }
 
@@ -162,9 +162,11 @@ function computeBeforeAfter(
     const rawValue = computeCorrectedRawValue(node, 'params', config);
 
     if (rawValue !== null) {
-      (node.raws as unknown as Record<string, unknown>)['litParams'] = rawValue;
+      correctedRaws['params'] = rawValue;
     }
   }
+
+  node.raws['styledComponentsRaws'] = correctedRaws;
 }
 
 /**

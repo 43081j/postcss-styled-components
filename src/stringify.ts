@@ -7,6 +7,7 @@ import {
   Builder
 } from 'postcss';
 import Stringifier from 'postcss/lib/stringifier';
+import {RootConfig, NodeRaws} from './types.js';
 
 const placeholderPattern = /^POSTCSS_LIT:\d+$/;
 
@@ -46,10 +47,11 @@ class LitStringifier extends Stringifier {
       const [, expressionIndexString] = node.text.split(':');
       const expressionIndex = Number(expressionIndexString);
       const root = node.root();
-      const expressionStrings = root.raws['litTemplateExpressions'];
-
-      if (expressionStrings && !Number.isNaN(expressionIndex)) {
-        const expression = expressionStrings[expressionIndex];
+      const rootConfig = root.raws['styledComponents'] as
+        | RootConfig
+        | undefined;
+      if (rootConfig && !Number.isNaN(expressionIndex)) {
+        const expression = rootConfig.expressionStrings[expressionIndex];
 
         if (expression) {
           this.builder(expression, node);
@@ -78,7 +80,8 @@ class LitStringifier extends Stringifier {
 
     // Here we want to recover any previously removed JS indentation
     // if possible. Otherwise, we use the `after` string as-is.
-    const after = node.raws['litAfter'] ?? node.raws.after;
+    const raws: NodeRaws = node.raws['styledComponentsRaws'] ?? {};
+    const after = raws['after'] ?? node.raws.after;
     if (after) {
       this.builder(after);
     }
@@ -92,23 +95,25 @@ class LitStringifier extends Stringifier {
     own: string,
     detect: string | undefined
   ): string {
-    if (own === 'before' && node.raws['before'] && node.raws['litBefore']) {
-      return node.raws['litBefore'];
+    const raws: NodeRaws = node.raws['styledComponentsRaws'] ?? {};
+
+    if (own === 'before' && node.raws['before'] && raws['before']) {
+      return raws['before'];
     }
-    if (own === 'after' && node.raws['after'] && node.raws['litAfter']) {
-      return node.raws['litAfter'];
+    if (own === 'after' && node.raws['after'] && raws['after']) {
+      return raws['after'];
     }
-    if (own === 'between' && node.raws['between'] && node.raws['litBetween']) {
-      return node.raws['litBetween'];
+    if (own === 'between' && node.raws['between'] && raws['between']) {
+      return raws['between'];
     }
     return super.raw(node, own, detect);
   }
 
   /** @inheritdoc */
   public override rawValue(node: AnyNode, prop: string): string {
-    const litProp = `lit${prop[0]?.toUpperCase()}${prop.slice(1)}`;
-    if (Object.prototype.hasOwnProperty.call(node.raws, litProp)) {
-      return `${node.raws[litProp]}`;
+    const raws: NodeRaws = node.raws['styledComponentsRaws'] ?? {};
+    if (Object.prototype.hasOwnProperty.call(raws, prop)) {
+      return `${raws[prop]}`;
     }
 
     return super.rawValue(node, prop);

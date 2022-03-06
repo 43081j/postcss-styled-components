@@ -107,7 +107,7 @@ describe('stringify', () => {
     `);
 
     const root = ast.nodes[0]!;
-    root.raws['litTemplateExpressions'] = undefined;
+    root.raws['styledComponents'] = undefined;
     const output = ast.toString(syntax);
 
     assert.equal(
@@ -140,7 +140,7 @@ describe('stringify', () => {
     `);
 
     const root = ast.nodes[0]!;
-    root.raws['litTemplateExpressions'] = [];
+    root.raws['styledComponents'] = undefined;
     const output = ast.toString(syntax);
 
     assert.equal(
