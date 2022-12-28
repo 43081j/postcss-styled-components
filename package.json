@@ -29,14 +29,26 @@
     "eslint": "^8.30.0",
     "eslint-config-google": "^0.14.0",
     "mocha": "^10.2.0",
+    "postcss-less": "^6.0.0",
+    "postcss-scss": "^4.0.6",
     "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.4"
   },
   "peerDependencies": {
-    "postcss": "^8.3.11"
+    "postcss": "^8.3.11",
+    "postcss-less": "^6.0.0",
+    "postcss-scss": "^4.0.6"
   },
   "dependencies": {
-    "postcss-js-core": "^0.3.0"
+    "postcss-js-core": "^0.4.0"
+  },
+  "peerDependenciesMeta": {
+    "postcss-less": {
+      "optional": true
+    },
+    "postcss-scss": {
+      "optional": true
+    }
   }
 }
