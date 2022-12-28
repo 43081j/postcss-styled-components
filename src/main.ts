@@ -1,9 +1,5 @@
-import {createParser, createStringifier, SyntaxOptions} from 'postcss-js-core';
-
-const options: SyntaxOptions = {
-  id: 'styled-components',
-  tagNames: ['styled', 'styled.*', 'styled(*', 'createGlobalStyle']
-};
+import {createParser, createStringifier} from 'postcss-js-core';
+import {options} from './options.js';
 
 export = {
   parse: createParser(options),

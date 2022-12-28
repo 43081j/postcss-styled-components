@@ -1,8 +1,12 @@
 import {Root, Declaration, Rule} from 'postcss';
 import syntax = require('../main.js');
+import lessSyntax = require('../less.js');
+import scssSyntax = require('../scss.js');
 import {assert} from 'chai';
 
 const {parse} = syntax;
+const {parse: lessParse, stringify: lessStringify} = lessSyntax;
+const {parse: scssParse, stringify: scssStringify} = scssSyntax;
 
 describe('main', () => {
   describe('parse', () => {
@@ -204,6 +208,42 @@ describe('main', () => {
 
       assert.equal(ast.nodes.length, 0);
     });
+
+    it('should support less', () => {
+      const source = `
+        styled.h1\`
+          color: hotpink;
+          .bordered();
+        \`;
+      `;
+      const doc = lessParse(source);
+
+      assert.equal(
+        doc.toString(),
+        `  color: hotpink;
+  @bordered();
+`
+      );
+    });
+
+    it('should support scss', () => {
+      const source = `
+        styled.h1\`
+          color: $theme;
+          box-shadow: 0 0 1px rgba($theme, .25);
+          @include theme;
+        \`;
+      `;
+      const doc = scssParse(source);
+
+      assert.equal(
+        doc.toString(),
+        `  color: $theme;
+  box-shadow: 0 0 1px rgba($theme, .25);
+  @include theme;
+`
+      );
+    });
   });
 
   describe('stringify', () => {
@@ -288,6 +328,52 @@ describe('main', () => {
       const output = ast.toString(syntax);
 
       assert.equal(output, source);
+    });
+
+    it('should support less', () => {
+      const source = `
+        styled.h1\`
+          color: hotpink;
+          .foo();
+        \`;
+      `;
+
+      const ast = lessParse(source);
+      const output = ast.toString({stringify: lessStringify});
+
+      assert.equal(
+        output,
+        `
+        styled.h1\`
+          color: hotpink;
+          .foo();
+        \`;
+      `
+      );
+    });
+
+    it('should support scss', () => {
+      const source = `
+        styled.h1\`
+          color: $theme;
+          box-shadow: 0 0 1px rgba($theme, .25);
+          @include theme;
+        \`;
+      `;
+
+      const ast = scssParse(source);
+      const output = ast.toString({stringify: scssStringify});
+
+      assert.equal(
+        output,
+        `
+        styled.h1\`
+          color: $theme;
+          box-shadow: 0 0 1px rgba($theme, .25);
+          @include theme;
+        \`;
+      `
+      );
     });
   });
 });
