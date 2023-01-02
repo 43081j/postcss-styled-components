@@ -1,6 +1,6 @@
 {
   "name": "postcss-styled-components",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "styled-components support for PostCSS and related tooling",
   "main": "lib/main.js",
   "files": [
@@ -42,7 +42,7 @@
     "postcss-scss": "^4.0.6"
   },
   "dependencies": {
-    "postcss-js-core": "^0.5.0"
+    "postcss-js-core": "^0.5.1"
   },
   "peerDependenciesMeta": {
     "postcss-less": {
