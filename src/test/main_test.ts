@@ -56,6 +56,29 @@ describe('main', () => {
       assert.equal(ast.source!.input.css, source);
     });
 
+    it('should parse css template strings', () => {
+      const source = `
+        css\`
+          color: hotpink;
+        \`;
+      `;
+      const ast = parse(source);
+      const root = ast.nodes[0] as Root;
+      const colour = root.nodes[0] as Declaration;
+      assert.equal(ast.type, 'document');
+      assert.equal(root.type, 'root');
+      assert.equal(colour.type, 'decl');
+      assert.equal(root.raws.codeBefore, '\n        css`\n');
+      assert.equal(root.parent, ast);
+      assert.equal(root.raws.codeAfter, '`;\n      ');
+      assert.deepEqual(ast.source!.start, {
+        line: 1,
+        column: 1,
+        offset: 0
+      });
+      assert.equal(ast.source!.input.css, source);
+    });
+
     it('should parse global stylesheets', () => {
       const source = `
         createGlobalStyle\`
